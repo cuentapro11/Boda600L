@@ -22,9 +22,20 @@ function enterWithMusicClick() {
     // usuario), iOS lo bloquea en silencio y por eso antes no sonaba en iPhone.
     if (playerReady && player) {
         document.getElementById('musicPlayer').style.display = 'block';
+        player.unMute();
+        player.setVolume(100);
         player.playVideo();
         isPlaying = true;
         updateMusicIcon();
+        // En iOS/Safari a veces el primer playVideo() no arranca el audio
+        // aunque sí "conecta" el gesto; reintentamos una vez, todavía
+        // dentro del mismo ciclo de interacción del usuario.
+        setTimeout(() => {
+            if (player && typeof player.getPlayerState === 'function' && player.getPlayerState() !== 1) {
+                player.unMute();
+                player.playVideo();
+            }
+        }, 300);
     }
     // Si el player todavía no está listo (conexión lenta), onPlayerReady se
     // encarga de reproducir apenas termine de inicializar.
@@ -59,9 +70,17 @@ function setupModalButtons() {
             if (playerReady && player) {
                 const musicPlayer = document.getElementById('musicPlayer');
                 if (musicPlayer) musicPlayer.style.display = 'block';
+                player.unMute();
+                player.setVolume(100);
                 player.playVideo();
                 isPlaying = true;
                 updateMusicIcon();
+                setTimeout(() => {
+                    if (player && typeof player.getPlayerState === 'function' && player.getPlayerState() !== 1) {
+                        player.unMute();
+                        player.playVideo();
+                    }
+                }, 300);
             }
         };
     }
@@ -155,6 +174,8 @@ function onPlayerReady(event) {
     // apenas esté listo.
     if (enableMusic && !isPlaying) {
         if (musicPlayer) musicPlayer.style.display = 'block';
+        event.target.unMute();
+        event.target.setVolume(100);
         event.target.playVideo();
         isPlaying = true;
         updateMusicIcon();
@@ -380,16 +401,21 @@ document.addEventListener('DOMContentLoaded', () => {
 function openLocation(location) {
     // Enlaces de ejemplo (dirección ficticia) - ceremonia y celebración
     const mapsUrls = {
-        ceremony: "https://maps.google.com/maps?q=Calle+Duarte+45,+Santo+Domingo&z=17&hl=es",
-        reception: "https://maps.google.com/maps?q=Av+Los+Jardines+120,+Santo+Domingo&z=17&hl=es"
+        ceremony: "https://maps.google.com/maps?q=Calle+Principal+123,+Sector+Ejemplo,+Santo+Domingo&z=17&hl=es",
+        reception: "https://maps.google.com/maps?q=Av+Modelo+456,+Sector+Ejemplo,+Santo+Domingo&z=17&hl=es"
     };
     const mapsUrl = mapsUrls[location] || mapsUrls.ceremony;
     window.open(mapsUrl, '_blank');
 }
 
+// NOTA: esta es una plantilla de ejemplo. Reemplaza el contenido de estas
+// funciones con tu propio enlace (Google Drive, Google Form, lista de
+// regalos, etc.) cuando personalices la invitación.
+
 function sharePhotos() {
-    const photosUrl = "https://photos.app.goo.gl/EJEMPLO00000";
-    window.open(photosUrl, '_blank');
+    // Ejemplo: aquí se debe colocar el enlace real a la carpeta de Google Drive.
+    // window.open('https://drive.google.com/...', '_blank');
+    showToast("Comparte tus fotos", "Aquí irá el enlace a la carpeta de Google Drive para subir tus fotos (ejemplo).");
 }
 
 function showDressCode() {
@@ -409,13 +435,14 @@ function closeDressCodeModal() {
 }
 
 function showGifts() {
-    const giftUrl = "https://ejemplo.com/datos-de-regalo";
-    window.open(giftUrl, '_blank');
+    // Ejemplo: aquí se debe colocar el enlace real (lista de regalos, cuenta, etc.).
+    showToast("Regalos", "Aquí irá el enlace o la información de regalos (ejemplo).");
 }
 
 function confirmAttendance() {
-    const googleFormUrl = "https://forms.gle/EJEMPLO00000";
-    window.open(googleFormUrl, '_blank');
+    // Ejemplo: aquí se debe colocar el enlace real al formulario de Google Forms.
+    // window.open('https://forms.google.com/...', '_blank');
+    showToast("Confirmar asistencia", "Aquí irá el enlace a tu formulario de Google Forms (ejemplo).");
 }
 
 // Sistema de Toast
